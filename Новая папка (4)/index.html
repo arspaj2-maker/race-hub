@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Race Hub — клубные гонки, трассы и пилоты</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+/* сброс */
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:#07120f;
+  color:#e6f2ee;
+  font-family:'Segoe UI','Inter',system-ui,sans-serif;
+  line-height:1.6;
+}
+a{text-decoration:none;color:inherit}
+ul{list-style:none}
+button{font-family:inherit}
+.container{max-width:1140px;margin:0 auto;padding:0 22px}
+
+:root{
+  --bg:#07120f;
+  --card:#0f1f1b;
+  --card2:#15302a;
+  --acc:#3ddc97;
+  --acc2:#00b4d8;
+  --acc-soft:rgba(61,220,151,.12);
+  --text:#e6f2ee;
+  --muted:#7fa89c;
+  --line:#1d3a33;
+  --r:16px;
+}
+
+/* фон — фото болида, тонированное в зелёный */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(5,18,14,.9),rgba(4,14,11,.97)),
+    url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1600&q=80');
+  background-size:cover;
+  background-position:center;
+  background-attachment:fixed;
+  z-index:-2;
+  filter:saturate(.75) brightness(.5) hue-rotate(120deg);
+}
+body::after{
+  content:'';
+  position:fixed;inset:0;
+  background:radial-gradient(circle at 15% 10%,rgba(61,220,151,.07),transparent 40%),
+             radial-gradient(circle at 85% 90%,rgba(0,180,216,.07),transparent 40%);
+  z-index:-1;pointer-events:none;
+}
+
+/* шапка */
+header{
+  background:rgba(6,18,15,.8);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:100;
+}
+.hd{display:flex;align-items:center;justify-content:space-between;padding:13px 0;gap:14px}
+.logo{font-size:23px;font-weight:800;display:flex;align-items:center;gap:9px;flex-shrink:0}
+.logo-ico{
+  width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,var(--acc),var(--acc2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:17px;color:#07120f;
+}
+.logo b{color:var(--acc)}
+nav ul{display:flex;gap:2px;font-weight:500}
+nav a{
+  font-size:13.5px;padding:8px 13px;border-radius:9px;
+  transition:.18s;display:block;color:var(--muted);
+}
+nav a:hover,nav a.active{background:var(--acc-soft);color:var(--acc)}
+.hd-right{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.btn-ghost{
+  background:none;border:none;color:var(--muted);
+  font-size:13.5px;font-weight:600;cursor:pointer;
+  padding:8px 13px;border-radius:9px;transition:.18s;
+}
+.btn-ghost:hover{color:var(--acc);background:var(--acc-soft)}
+.btn-line{
+  border:1.5px solid var(--line);padding:8px 16px;border-radius:9px;
+  font-weight:600;color:var(--text);transition:.18s;
+  background:rgba(15,31,27,.8);cursor:pointer;font-size:13.5px;
+  display:inline-flex;align-items:center;gap:6px;white-space:nowrap;
+}
+.btn-line:hover{border-color:var(--acc);color:var(--acc);background:var(--acc-soft)}
+.burger{
+  display:none;background:rgba(15,31,27,.8);border:1.5px solid var(--line);
+  color:var(--text);font-size:17px;padding:8px 13px;border-radius:9px;cursor:pointer;
+}
+
+/* hero */
+.hero{padding:76px 0 84px;position:relative;overflow:hidden;text-align:center}
+.hero-bg{
+  position:absolute;inset:0;
+  background:url('https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=1600&q=80') center 40%/cover;
+  z-index:-1;opacity:.4;
+  filter:hue-rotate(120deg) saturate(.9);
+}
+.hero-bg::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(6,18,15,.78),rgba(6,18,15,.5) 40%,rgba(4,14,11,.94));
+}
+.tag{
+  display:inline-flex;align-items:center;gap:7px;
+  background:rgba(61,220,151,.12);border:1px solid rgba(61,220,151,.32);
+  color:var(--acc);font-size:12.5px;font-weight:600;
+  padding:5px 15px;border-radius:30px;margin-bottom:22px;
+  backdrop-filter:blur(6px);
+}
+.hero h1{
+  font-size:62px;font-weight:800;line-height:1.06;
+  letter-spacing:-2.4px;margin-bottom:20px;
+  max-width:880px;margin-left:auto;margin-right:auto;
+  text-shadow:0 4px 30px rgba(0,0,0,.65);
+}
+.hero h1 em{
+  font-style:normal;
+  background:linear-gradient(90deg,var(--acc),var(--acc2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero p{
+  font-size:18px;color:#b6d0c7;margin-bottom:36px;
+  max-width:600px;margin-left:auto;margin-right:auto;
+  text-shadow:0 2px 16px rgba(0,0,0,.6);
+}
+.hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:44px}
+.btn{
+  background:linear-gradient(135deg,var(--acc),var(--acc2));
+  color:#07120f;padding:15px 34px;border-radius:12px;
+  font-weight:700;font-size:15.5px;transition:.2s;border:none;
+  cursor:pointer;box-shadow:0 8px 22px rgba(61,220,151,.25);
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+}
+.btn:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(61,220,151,.4)}
+.btn:active{transform:translateY(0)}
+.btn-2{
+  background:rgba(15,31,27,.85);border:1.5px solid var(--line);
+  padding:15px 34px;border-radius:12px;font-weight:600;font-size:15.5px;
+  color:var(--text);transition:.2s;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  backdrop-filter:blur(8px);
+}
+.btn-2:hover{border-color:var(--acc);color:var(--acc)}
+.hero-nums{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;max-width:740px;margin:0 auto}
+.num{
+  background:rgba(15,31,27,.7);border:1px solid var(--line);
+  border-radius:var(--r);padding:20px 14px;backdrop-filter:blur(10px);
+}
+.num b{display:block;font-size:28px;font-weight:800;color:var(--acc);letter-spacing:-1px}
+.num span{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;font-weight:600}
+
+/* секции */
+section{padding:68px 0}
+.head{display:flex;align-items:flex-end;justify-content:space-between;gap:22px;flex-wrap:wrap;margin-bottom:36px}
+.head h2{
+  font-size:36px;font-weight:800;letter-spacing:-1.1px;line-height:1.15;
+  text-shadow:0 2px 18px rgba(0,0,0,.5);
+}
+.head h2 em{font-style:normal;color:var(--acc)}
+.head p{color:var(--muted);font-size:15.5px;margin-top:6px;max-width:460px}
+
+/* галерея болидов */
+.cars{
+  padding:68px 0;
+  background:rgba(10,26,21,.82);
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  backdrop-filter:blur(4px);
+}
+.cars-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px}
+.car{
+  position:relative;border-radius:var(--r);overflow:hidden;
+  border:1px solid var(--line);background:var(--card);
+  cursor:pointer;transition:.3s;aspect-ratio:16/10;
+}
+.car:hover{border-color:var(--acc);transform:translateY(-4px);box-shadow:0 20px 44px rgba(0,0,0,.55)}
+.car img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}
+.car:hover img{transform:scale(1.07)}
+.car-info{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(5,14,11,.93) 0%,rgba(5,14,11,.15) 55%,transparent 100%);
+  display:flex;flex-direction:column;justify-content:flex-end;padding:18px;
+}
+.car-name{font-size:17px;font-weight:700;margin-bottom:3px}
+.car-spec{font-size:11.5px;color:var(--acc);font-weight:600;text-transform:uppercase;letter-spacing:.6px}
+.car-zoom{
+  position:absolute;top:13px;right:13px;width:36px;height:36px;
+  border-radius:10px;background:rgba(5,14,11,.7);
+  backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--acc);font-size:14px;opacity:0;transform:scale(.85);transition:.25s;
+}
+.car:hover .car-zoom{opacity:1;transform:scale(1)}
+.cars-more{text-align:center;margin-top:28px}
+
+/* лайтбокс */
+.lb{
+  position:fixed;inset:0;background:rgba(3,10,8,.94);
+  backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;
+  padding:22px;z-index:900;opacity:0;visibility:hidden;transition:.25s;
+}
+.lb.open{opacity:1;visibility:visible}
+.lb-inner{max-width:980px;width:100%;transform:scale(.95);transition:transform .3s}
+.lb.open .lb-inner{transform:scale(1)}
+.lb-img{
+  border-radius:24px;overflow:hidden;border:1px solid var(--line);
+  background:#000;box-shadow:0 40px 100px rgba(0,0,0,.8);
+}
+.lb-img img{width:100%;max-height:68vh;object-fit:contain;display:block;margin:0 auto}
+.lb-cap{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:16px;flex-wrap:wrap}
+.lb-cap b{font-size:19px;font-weight:700}
+.lb-cap span{display:block;font-size:12.5px;color:var(--acc);font-weight:600;text-transform:uppercase;letter-spacing:.6px}
+.lb-count{font-size:13.5px;color:var(--muted);font-weight:600}
+.lb-x{
+  position:absolute;top:18px;right:18px;width:44px;height:44px;
+  border-radius:12px;background:var(--card);border:1px solid var(--line);
+  color:var(--text);font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:.2s;z-index:910;
+}
+.lb-x:hover{border-color:var(--acc);color:var(--acc);transform:rotate(90deg)}
+.lb-nav{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:48px;height:48px;border-radius:14px;
+  background:var(--card);border:1px solid var(--line);
+  color:var(--text);font-size:19px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:.2s;z-index:910;
+}
+.lb-nav:hover{border-color:var(--acc);color:var(--acc);background:var(--acc-soft)}
+.lb-prev{left:18px}.lb-next{right:18px}
+
+/* фичи */
+.f-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+.f-card{
+  background:rgba(15,31,27,.85);border:1px solid var(--line);
+  border-radius:var(--r);padding:24px 20px;transition:.25s;
+  display:flex;flex-direction:column;backdrop-filter:blur(10px);
+}
+.f-card:hover{border-color:rgba(61,220,151,.5);transform:translateY(-4px);background:rgba(21,48,42,.9)}
+.f-ico{
+  width:44px;height:44px;border-radius:12px;background:var(--acc-soft);
+  color:var(--acc);display:flex;align-items:center;justify-content:center;
+  font-size:19px;margin-bottom:14px;
+}
+.f-card h3{font-size:18px;font-weight:700;margin-bottom:7px}
+.f-card p{color:var(--muted);font-size:13.5px;line-height:1.55;flex:1;margin-bottom:14px}
+.f-btn{
+  background:none;border:1.5px solid var(--line);color:var(--text);
+  padding:8px 14px;border-radius:9px;font-size:12.5px;font-weight:600;
+  cursor:pointer;transition:.2s;display:inline-flex;align-items:center;
+  gap:7px;align-self:flex-start;
+}
+.f-btn:hover{border-color:var(--acc);color:var(--acc);background:var(--acc-soft);gap:11px}
+
+/* события */
+.filters{
+  display:flex;gap:5px;flex-wrap:wrap;margin-bottom:26px;
+  background:rgba(15,31,27,.85);border:1px solid var(--line);
+  border-radius:12px;padding:5px;width:fit-content;backdrop-filter:blur(10px);
+}
+.filters button{
+  background:none;border:none;color:var(--muted);
+  padding:8px 16px;border-radius:9px;font-size:12.5px;font-weight:600;
+  cursor:pointer;transition:.2s;
+}
+.filters button:hover{color:var(--acc)}
+.filters button.on{background:var(--acc);color:#07120f}
+.e-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px}
+.e-card{
+  background:rgba(15,31,27,.88);border-radius:var(--r);overflow:hidden;
+  border:1px solid var(--line);transition:.25s;
+  display:flex;flex-direction:column;backdrop-filter:blur(10px);
+}
+.e-card:hover{transform:translateY(-4px);border-color:rgba(61,220,151,.45);box-shadow:0 18px 40px rgba(0,0,0,.55)}
+.e-card.hide{display:none}
+.e-img{
+  height:124px;display:flex;align-items:center;justify-content:center;
+  font-size:40px;border-bottom:1px solid var(--line);
+  position:relative;background-size:cover;background-position:center;overflow:hidden;
+}
+.e-img::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(5,14,11,.55),rgba(5,14,11,.87))}
+.e-img i{position:relative;z-index:1;color:var(--acc)}
+.e-img.city{background-image:url('https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=600&q=70')}
+.e-img.hill{background-image:url('https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=600&q=70')}
+.e-img.circuit{background-image:url('https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=600&q=70')}
+.e-tag{
+  position:absolute;top:11px;left:11px;background:rgba(8,20,16,.85);
+  border:1px solid var(--line);color:var(--acc);font-size:9.5px;
+  font-weight:700;text-transform:uppercase;letter-spacing:.6px;
+  padding:3px 10px;border-radius:20px;z-index:2;
+}
+.e-body{padding:16px 18px 18px;display:flex;flex-direction:column;flex:1}
+.e-body h3{font-size:17px;margin-bottom:7px}
+.e-meta{display:flex;gap:11px;color:var(--muted);font-size:11.5px;margin-bottom:9px;flex-wrap:wrap}
+.e-meta i{margin-right:3px;color:var(--acc)}
+.e-desc{color:var(--muted);font-size:12.5px;margin-bottom:14px;line-height:1.55;flex:1}
+.e-foot{display:flex;align-items:center;justify-content:space-between;gap:7px}
+.e-more{
+  color:var(--acc);font-weight:600;font-size:12.5px;display:inline-flex;
+  align-items:center;gap:6px;transition:gap .2s;
+  background:none;border:none;cursor:pointer;padding:0;
+}
+.e-more:hover{gap:11px}
+.like{
+  background:var(--card2);border:1px solid var(--line);color:var(--muted);
+  border-radius:20px;padding:4px 11px;font-size:11.5px;font-weight:600;
+  cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:.2s;
+}
+.like:hover{border-color:var(--acc);color:var(--acc)}
+.like.on{background:var(--acc-soft);border-color:var(--acc);color:var(--acc)}
+.like.on i{animation:pop .3s ease}
+@keyframes pop{0%,100%{transform:scale(1)}50%{transform:scale(1.4)}}
+
+/* трассы */
+.tracks{background:rgba(10,26,21,.85);border-top:1px solid var(--line);border-bottom:1px solid var(--line);backdrop-filter:blur(4px)}
+.t-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:16px}
+.t-card{background:rgba(15,31,27,.9);border:1px solid var(--line);border-radius:var(--r);padding:22px;transition:.25s;backdrop-filter:blur(10px)}
+.t-card:hover{border-color:rgba(0,180,216,.5);background:rgba(21,48,42,.95)}
+.t-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.t-name{font-size:16.5px;font-weight:700}
+.t-rate{color:var(--acc);font-size:13.5px;font-weight:700;display:flex;align-items:center;gap:4px}
+.t-bar{height:5px;background:rgba(5,14,11,.9);border-radius:5px;overflow:hidden;margin-bottom:12px}
+.t-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--acc),var(--acc2));transition:width .6s}
+.t-meta{display:flex;justify-content:space-between;color:var(--muted);font-size:11.5px;margin-bottom:14px}
+.t-meta i{color:var(--acc);margin-right:3px}
+.t-btn{
+  width:100%;background:none;border:1.5px solid var(--line);color:var(--text);
+  padding:9px;border-radius:9px;font-size:12.5px;font-weight:600;
+  cursor:pointer;transition:.2s;display:inline-flex;align-items:center;justify-content:center;gap:7px;
+}
+.t-btn:hover{border-color:var(--acc);color:var(--acc);background:var(--acc-soft)}
+
+/* таблица */
+.tbl{background:rgba(15,31,27,.9);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;backdrop-filter:blur(10px)}
+.tbl-row{
+  display:grid;grid-template-columns:54px 1fr 90px 90px 80px;
+  align-items:center;padding:14px 20px;border-bottom:1px solid var(--line);
+  transition:background .2s;gap:10px;
+}
+.tbl-row:last-child{border-bottom:none}
+.tbl-row:not(.tbl-head):hover{background:rgba(21,48,42,.7)}
+.tbl-head{background:rgba(21,48,42,.85);font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700}
+.tbl-rank{font-weight:800;font-size:15px;color:var(--acc)}
+.tbl-name{font-weight:600;font-size:14px;display:flex;align-items:center;gap:9px}
+.tbl-av{
+  width:30px;height:30px;border-radius:8px;
+  background:linear-gradient(135deg,var(--acc),var(--acc2));
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:12px;color:#07120f;flex-shrink:0;
+}
+.tbl-pts{font-weight:700;font-size:14px;color:var(--acc)}
+.tbl-w,.tbl-r{font-size:13px;color:var(--muted)}
+
+/* калькулятор */
+.calc{background:rgba(10,26,21,.85);border-top:1px solid var(--line);border-bottom:1px solid var(--line);backdrop-filter:blur(4px)}
+.calc-box{
+  background:rgba(15,31,27,.9);border:1px solid var(--line);border-radius:24px;
+  padding:36px;display:grid;grid-template-columns:1fr 1fr;gap:36px;backdrop-filter:blur(10px);
+}
+.calc-f .field{margin-bottom:16px}
+.calc-f label{display:block;font-size:12px;font-weight:600;margin-bottom:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.calc-f select,.calc-f input{
+  width:100%;background:rgba(5,14,11,.9);border:1.5px solid var(--line);
+  border-radius:9px;padding:11px 13px;color:var(--text);font-size:13.5px;
+  outline:none;transition:border-color .2s;
+}
+.calc-f select:focus,.calc-f input:focus{border-color:var(--acc)}
+.calc-res{
+  background:rgba(21,48,42,.75);border:1px solid var(--line);
+  border-radius:var(--r);padding:26px;display:flex;
+  flex-direction:column;justify-content:center;text-align:center;
+}
+.calc-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700;margin-bottom:7px}
+.calc-val{font-size:44px;font-weight:800;color:var(--acc);letter-spacing:-2px;line-height:1;margin-bottom:10px;transition:transform .2s}
+.calc-note{font-size:12.5px;color:var(--muted);line-height:1.5}
+.calc-speed{font-size:13px;color:var(--muted);margin-top:14px}
+.calc-speed b{color:var(--acc);font-size:17px}
+
+/* faq */
+.faq-list{display:flex;flex-direction:column;gap:10px;max-width:760px;margin:0 auto}
+.faq-item{background:rgba(15,31,27,.9);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;transition:border-color .2s;backdrop-filter:blur(10px)}
+.faq-item.open{border-color:rgba(61,220,151,.45)}
+.faq-q{
+  width:100%;background:none;border:none;color:var(--text);
+  padding:18px 22px;font-size:15px;font-weight:600;text-align:left;
+  cursor:pointer;display:flex;align-items:center;justify-content:space-between;
+  gap:14px;transition:color .2s;
+}
+.faq-q:hover{color:var(--acc)}
+.faq-q i{color:var(--acc);transition:transform .3s;flex-shrink:0}
+.faq-item.open .faq-q i{transform:rotate(180deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .35s,padding .35s;padding:0 22px;color:var(--muted);font-size:13.5px;line-height:1.65}
+.faq-item.open .faq-a{max-height:300px;padding:0 22px 20px}
+
+/* отзывы */
+.revs{background:rgba(10,26,21,.85);border-top:1px solid var(--line);border-bottom:1px solid var(--line);backdrop-filter:blur(4px)}
+.rev-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:16px}
+.rev{background:rgba(15,31,27,.9);border:1px solid var(--line);border-radius:var(--r);padding:24px;transition:.25s;backdrop-filter:blur(10px)}
+.rev:hover{border-color:rgba(61,220,151,.45);transform:translateY(-3px)}
+.rev-text{color:var(--muted);font-size:13.5px;line-height:1.65;margin-bottom:16px;font-style:italic}
+.rev-auth{display:flex;align-items:center;gap:11px}
+.rev-av{
+  width:40px;height:40px;border-radius:11px;
+  background:linear-gradient(135deg,var(--acc),var(--acc2));
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:15px;color:#07120f;flex-shrink:0;
+}
+.rev-name{font-size:13.5px;font-weight:700}
+.rev-role{font-size:11.5px;color:var(--muted)}
+
+/* подписка */
+.sub-box{
+  background:rgba(13,30,25,.88);border:1px solid var(--line);border-radius:24px;
+  padding:46px 36px;display:grid;grid-template-columns:1fr 1fr;
+  gap:36px;align-items:center;position:relative;overflow:hidden;backdrop-filter:blur(12px);
+}
+.sub-box::before{
+  content:'';position:absolute;top:-50%;right:-20%;width:460px;height:460px;
+  background:radial-gradient(circle,rgba(0,180,216,.12),transparent 70%);
+}
+.sub-box h2{font-size:31px;font-weight:800;letter-spacing:-1px;margin-bottom:10px;position:relative}
+.sub-box p{color:var(--muted);font-size:14px;position:relative}
+.sub-f{display:flex;gap:9px;position:relative;flex-wrap:wrap}
+.sub-f input{
+  flex:1;min-width:190px;background:rgba(5,14,11,.95);border:1.5px solid var(--line);
+  border-radius:11px;padding:13px 16px;color:var(--text);font-size:13.5px;
+  outline:none;transition:border-color .2s,box-shadow .2s;
+}
+.sub-f input:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(61,220,151,.12)}
+.sub-f input::placeholder{color:#4f6f66}
+.sub-f .btn{padding:13px 26px;border-radius:11px;font-size:14px}
+
+/* cta */
+.cta{padding:56px 0 76px}
+.cta-box{
+  background:linear-gradient(135deg,rgba(17,40,34,.92),rgba(9,24,20,.95));
+  border:1px solid var(--line);border-radius:24px;
+  padding:46px 36px;text-align:center;position:relative;overflow:hidden;backdrop-filter:blur(12px);
+}
+.cta-box::before{
+  content:'';position:absolute;top:-50%;left:50%;transform:translateX(-50%);
+  width:560px;height:380px;
+  background:radial-gradient(circle,rgba(61,220,151,.12),transparent 70%);
+}
+.cta-box h2{font-size:35px;font-weight:800;letter-spacing:-1px;margin-bottom:10px;position:relative}
+.cta-box p{color:var(--muted);font-size:15px;max-width:480px;margin:0 auto 28px;position:relative}
+.cta-actions{display:flex;gap:11px;justify-content:center;flex-wrap:wrap;position:relative}
+
+/* футер */
+footer{
+  padding:36px 0 26px;color:var(--muted);font-size:12.5px;
+  border-top:1px solid var(--line);background:rgba(6,18,15,.85);backdrop-filter:blur(10px);
+}
+.ft{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.ft-logo{font-weight:800;font-size:17px;color:var(--text);display:flex;align-items:center;gap:8px}
+.ft-logo .logo-ico{width:26px;height:26px;font-size:13px;border-radius:7px}
+.ft-links{display:flex;gap:18px;flex-wrap:wrap}
+.ft-links a{color:var(--muted);font-size:12.5px;cursor:pointer;transition:color .2s}
+.ft-links a:hover{color:var(--acc)}
+
+/* тост */
+.toast{
+  position:fixed;bottom:26px;right:26px;background:rgba(15,31,27,.97);
+  border:1px solid var(--acc);color:var(--text);padding:14px 20px;
+  border-radius:13px;box-shadow:0 16px 44px rgba(0,0,0,.65);
+  display:flex;align-items:center;gap:11px;font-weight:500;
+  font-size:13.5px;z-index:1000;transform:translateY(130%);opacity:0;
+  transition:transform .35s cubic-bezier(.2,1,.3,1),opacity .35s;max-width:370px;
+  backdrop-filter:blur(10px);
+}
+.toast.on{transform:translateY(0);opacity:1}
+.toast i{color:var(--acc);font-size:18px;flex-shrink:0}
+
+/* модалка */
+.modal-wrap{
+  position:fixed;inset:0;background:rgba(3,10,8,.85);
+  backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;
+  padding:22px;z-index:500;opacity:0;visibility:hidden;transition:.25s;
+}
+.modal-wrap.open{opacity:1;visibility:visible}
+.modal{
+  background:rgba(15,31,27,.98);border:1px solid var(--line);
+  border-radius:22px;padding:32px;width:100%;max-width:410px;
+  position:relative;transform:translateY(24px) scale(.97);
+  transition:transform .3s cubic-bezier(.2,1,.3,1);
+  box-shadow:0 40px 80px rgba(0,0,0,.65);
+}
+.modal-wrap.open .modal{transform:translateY(0) scale(1)}
+.modal-x{
+  position:absolute;top:13px;right:13px;background:none;
+  border:none;color:var(--muted);font-size:18px;cursor:pointer;
+  width:30px;height:30px;border-radius:50%;display:flex;
+  align-items:center;justify-content:center;transition:.2s;
+}
+.modal-x:hover{background:var(--card2);color:var(--acc)}
+.modal h3{font-size:23px;font-weight:800;margin-bottom:5px;letter-spacing:-.5px}
+.modal-sub{color:var(--muted);font-size:12.5px;margin-bottom:22px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:11.5px;font-weight:700;margin-bottom:5px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.field input{
+  width:100%;background:rgba(5,14,11,.95);border:1.5px solid var(--line);
+  border-radius:9px;padding:11px 13px;color:var(--text);font-size:13.5px;
+  outline:none;transition:border-color .2s,box-shadow .2s;
+}
+.field input:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(61,220,151,.12)}
+.field input::placeholder{color:#4f6f66}
+.modal .btn{width:100%;margin-top:6px;border-radius:9px;padding:13px}
+.modal-alt{text-align:center;margin-top:14px;font-size:12.5px;color:var(--muted)}
+.modal-alt button{background:none;border:none;color:var(--acc);font-weight:600;cursor:pointer;font-size:12.5px;padding:0}
+.modal-alt button:hover{text-decoration:underline}
+
+/* адаптив */
+@media(max-width:900px){
+  .burger{display:block}
+  nav{width:100%;max-height:0;overflow:hidden;transition:max-height .3s;order:4}
+  nav.open{max-height:380px}
+  nav ul{flex-direction:column;gap:2px;padding-top:9px}
+  nav a{padding:10px 13px;border-radius:9px}
+  .hd-right{margin-left:auto}
+  .sub-box{grid-template-columns:1fr;gap:26px;padding:36px 26px}
+  .calc-box{grid-template-columns:1fr;gap:26px;padding:26px}
+  .tbl-row{grid-template-columns:38px 1fr 64px 56px}
+  .tbl-r{display:none}
+  .tbl-head .tbl-r{display:none}
+  .lb-prev{left:8px}.lb-next{right:8px}
+  .lb-nav{width:42px;height:42px;font-size:16px}
+  body::before{background-attachment:scroll}
+}
+@media(max-width:768px){
+  .hero h1{font-size:38px;letter-spacing:-1.1px}
+  .hero p{font-size:16px}
+  .hero-nums{grid-template-columns:repeat(2,1fr)}
+  .head h2{font-size:28px}
+  .cta-box h2{font-size:26px}
+  .sub-box h2{font-size:24px}
+  .cta-box{padding:36px 22px}
+  .ft{flex-direction:column;text-align:center}
+  .toast{left:14px;right:14px;bottom:14px;max-width:none}
+  .modal{padding:24px 18px}
+  .tbl-row{grid-template-columns:32px 1fr 64px;padding:11px 14px}
+  .tbl-w{display:none}
+}
+@media(max-width:520px){
+  .hero h1{font-size:30px}
+  .hero-actions .btn,.hero-actions .btn-2{width:100%}
+  .hero-nums{grid-template-columns:repeat(2,1fr);gap:9px}
+  .num b{font-size:22px}
+  .btn-ghost{display:none}
+  .filters{width:100%;justify-content:center}
+  .calc-val{font-size:33px}
+  .lb-nav{display:none}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container hd">
+    <div class="logo"><div class="logo-ico"><i class="fas fa-flag-checkered"></i></div>Race<b>Hub</b></div>
+    <button class="burger" id="burger"><i class="fas fa-bars"></i></button>
+    <nav id="nav">
+      <ul>
+        <li><a href="#top" class="active">Главная</a></li>
+        <li><a href="#cars">Болиды</a></li>
+        <li><a href="#features">Клуб</a></li>
+        <li><a href="#events">Заезды</a></li>
+        <li><a href="#tracks">Трассы</a></li>
+        <li><a href="#table">Пилоты</a></li>
+        <li><a href="#faq">Вопросы</a></li>
+      </ul>
+    </nav>
+    <div class="hd-right">
+      <button class="btn-ghost" id="loginBtn">Вход</button>
+      <button class="btn-line" id="joinTop"><i class="fas fa-user-plus"></i> В клуб</button>
+    </div>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <div class="hero-bg"></div>
+  <div class="container">
+    <div class="tag"><i class="fas fa-flag"></i> Набор в сезон 2025 открыт</div>
+    <h1>Гонки без лишней<br><em>суеты</em> и понтов</h1>
+    <p>Мы собираем пилотов, механиков и просто тех, кто любит быстрые машины. Трассы, заезды, результаты — всё в одном месте, без воды.</p>
+    <div class="hero-actions">
+      <button class="btn" data-start><i class="fas fa-flag"></i> Хочу за руль</button>
+      <button class="btn-2" data-watch><i class="fas fa-calendar"></i> Ближайшие заезды</button>
+    </div>
+    <div class="hero-nums">
+      <div class="num"><b id="nPilots">128</b><span>пилотов</span></div>
+      <div class="num"><b id="nTracks">24</b><span>трассы</span></div>
+      <div class="num"><b id="nEvents">9</b><span>заездов</span></div>
+      <div class="num"><b id="nRaces">342</b><span>стартов</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="cars" id="cars">
+  <div class="container">
+    <div class="head">
+      <div>
+        <h2>Машины, на которых <em>ездим</em></h2>
+        <p>Жми на фото — откроется крупнее. Листать можно стрелками.</p>
+      </div>
+    </div>
+    <div class="cars-grid" id="carsGrid">
+      <div class="car">
+        <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&q=80" alt="Формула" loading="lazy">
+        <span class="car-zoom"><i class="fas fa-expand"></i></span>
+        <div class="car-info"><span class="car-spec">Формула · ~1000 л.с.</span><span class="car-name">Открытые колёса</span></div>
+      </div>
+      <div class="car">
+        <img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&q=80" alt="GT" loading="lazy">
+        <span class="car-zoom"><i class="fas fa-expand"></i></span>
+        <div class="car-info"><span class="car-spec">GT3 · 550 л.с.</span><span class="car-name">Кузовной класс</span></div>
+      </div>
+      <div class="car">
+        <img src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=800&q=80" alt="Ралли" loading="lazy">
+        <span class="car-zoom"><i class="fas fa-expand"></i></span>
+        <div class="car-info"><span class="car-spec">Ралли · 380 л.с.</span><span class="car-name">Грунт и гравий</span></div>
+      </div>
+      <div class="car">
+        <img src="https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=800&q=80" alt="Гиперкар" loading="lazy">
+        <span class="car-zoom"><i class="fas fa-expand"></i></span>
+        <div class="car-info"><span class="car-spec">Гиперкар · 800 л.с.</span><span class="car-name">Шоссе и трек</span></div>
+      </div>
+      <div class="car">
+        <img src="https://images.unsplash.com/photo-1544829099-b9a0c07fad1a?w=800&q=80" alt="Дрифт" loading="lazy">
+        <span class="car-zoom"><i class="fas fa-expand"></i></span>
+        <div class="car-info"><span class="car-spec">Дрифт · 450 л.с.</span><span class="car-name">Боком по асфальту</span></div>
+      </div>
+      <div class="car">
+        <img src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=800&q=80" alt="Time Attack" loading="lazy">
+        <span class="car-zoom"><i class="fas fa-expand"></i></span>
+        <div class="car-info"><span class="car-spec">Time Attack · 600 л.с.</span><span class="car-name">Быстрый круг</span></div>
+      </div>
+    </div>
+    <div class="cars-more">
+      <button class="btn-line" id="moreCars"><i class="fas fa-plus"></i> Ещё машины</button>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="container">
+    <div class="head">
+      <div>
+        <h2>Что тут <em>есть</em></h2>
+        <p>Коротко о том, чем клуб реально полезен.</p>
+      </div>
+    </div>
+    <div class="f-grid">
+      <div class="f-card">
+        <div class="f-ico"><i class="fas fa-tachometer-alt"></i></div>
+        <h3>Живые заезды</h3>
+        <p>Старты, результаты и уведомления — прямо на сайте, без лишних звонков.</p>
+        <button class="f-btn" data-go="events">Смотреть заезды <i class="fas fa-arrow-right"></i></button>
+      </div>
+      <div class="f-card">
+        <div class="f-ico"><i class="fas fa-map"></i></div>
+        <h3>Трассы</h3>
+        <p>Схемы, покрытие, сложность и отзывы тех, кто уже там катал.</p>
+        <button class="f-btn" data-go="tracks">Открыть трассы <i class="fas fa-arrow-right"></i></button>
+      </div>
+      <div class="f-card">
+        <div class="f-ico"><i class="fas fa-users"></i></div>
+        <h3>Свои люди</h3>
+        <p>Пилоты, механики, штурманы. Можно найти напарника или собрать команду.</p>
+        <button class="f-btn" data-go="sub">В сообщество <i class="fas fa-arrow-right"></i></button>
+      </div>
+      <div class="f-card">
+        <div class="f-ico"><i class="fas fa-trophy"></i></div>
+        <h3>Очки и зачёт</h3>
+        <p>Сезонный рейтинг, личные результаты и статистика по каждому этапу.</p>
+        <button class="f-btn" data-go="table">К пилотам <i class="fas fa-arrow-right"></i></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="events">
+  <div class="container">
+    <div class="head">
+      <div>
+        <h2>Что <em>скоро</em></h2>
+        <p>Выбери тип трассы — покажем только нужные заезды.</p>
+      </div>
+    </div>
+    <div class="filters" id="filters">
+      <button class="on" data-f="all">Все</button>
+      <button data-f="city">Город</button>
+      <button data-f="hill">Горы</button>
+      <button data-f="circuit">Кольцо</button>
+    </div>
+    <div class="e-grid" id="eventsGrid">
+      <div class="e-card" data-cat="city">
+        <div class="e-img city"><span class="e-tag">Город</span><i class="fas fa-city"></i></div>
+        <div class="e-body">
+          <h3>Ночной город</h3>
+          <div class="e-meta"><span><i class="fas fa-calendar"></i> 24 мая</span><span><i class="fas fa-map-pin"></i> «Неон»</span></div>
+          <p class="e-desc">Улицы, свет фонарей, 12 кругов. Выезд только с опытом ночных заездов.</p>
+          <div class="e-foot">
+            <button class="e-more" data-name="Ночной город" data-date="24 мая" data-place="«Неон»">Подробнее <i class="fas fa-arrow-right"></i></button>
+            <button class="like" data-like><i class="far fa-heart"></i> <span>0</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="e-card" data-cat="hill">
+        <div class="e-img hill"><span class="e-tag">Горы</span><i class="fas fa-mountain"></i></div>
+        <div class="e-body">
+          <h3>Орлиный подъём</h3>
+          <div class="e-meta"><span><i class="fas fa-calendar"></i> 7 июня</span><span><i class="fas fa-map-pin"></i> Серпантин</span></div>
+          <p class="e-desc">Классика — вверх на время. Открытый класс, обычно 30+ машин.</p>
+          <div class="e-foot">
+            <button class="e-more" data-name="Орлиный подъём" data-date="7 июня" data-place="Серпантин">Подробнее <i class="fas fa-arrow-right"></i></button>
+            <button class="like" data-like><i class="far fa-heart"></i> <span>0</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="e-card" data-cat="circuit">
+        <div class="e-img circuit"><span class="e-tag">Кольцо</span><i class="fas fa-water"></i></div>
+        <div class="e-body">
+          <h3>Кольцо у озера</h3>
+          <div class="e-meta"><span><i class="fas fa-calendar"></i> 21 июня</span><span><i class="fas fa-map-pin"></i> «Бриз»</span></div>
+          <p class="e-desc">Летний этап. Квалификация и финал, два заезда за день.</p>
+          <div class="e-foot">
+            <button class="e-more" data-name="Кольцо у озера" data-date="21 июня" data-place="«Бриз»">Подробнее <i class="fas fa-arrow-right"></i></button>
+            <button class="like" data-like><i class="far fa-heart"></i> <span>0</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="e-card" data-cat="city">
+        <div class="e-img city"><span class="e-tag">Город</span><i class="fas fa-road"></i></div>
+        <div class="e-body">
+          <h3>Спринт на набережной</h3>
+          <div class="e-meta"><span><i class="fas fa-calendar"></i> 5 июля</span><span><i class="fas fa-map-pin"></i> «Юг»</span></div>
+          <p class="e-desc">Коротко и быстро. Пары на выбывание, дистанция около 2 км.</p>
+          <div class="e-foot">
+            <button class="e-more" data-name="Спринт на набережной" data-date="5 июля" data-place="«Юг»">Подробнее <i class="fas fa-arrow-right"></i></button>
+            <button class="like" data-like><i class="far fa-heart"></i> <span>0</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="e-card" data-cat="circuit">
+        <div class="e-img circuit"><span class="e-tag">Кольцо</span><i class="fas fa-flag-checkered"></i></div>
+        <div class="e-body">
+          <h3>Осенний кубок</h3>
+          <div class="e-meta"><span><i class="fas fa-calendar"></i> 13 сентября</span><span><i class="fas fa-map-pin"></i> «Северный»</span></div>
+          <p class="e-desc">Закрытие сезона. 40 минут, обязательный пит-стоп.</p>
+          <div class="e-foot">
+            <button class="e-more" data-name="Осенний кубок" data-date="13 сентября" data-place="«Северный»">Подробнее <i class="fas fa-arrow-right"></i></button>
+            <button class="like" data-like><i class="far fa-heart"></i> <span>0</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="tracks" id="tracks">
+  <div class="container">
+    <div class="head">
+      <div>
+        <h2>Наши <em>трассы</em></h2>
+        <p>Оценка — средняя от тех, кто уже катался. Жми, чтобы узнать детали.</p>
+      </div>
+    </div>
+    <div class="t-grid">
+      <div class="t-card">
+        <div class="t-top"><span class="t-name">«Неон»</span><span class="t-rate"><i class="fas fa-star"></i> 4.8</span></div>
+        <div class="t-bar"><div class="t-fill" style="width:80%"></div></div>
+        <div class="t-meta"><span><i class="fas fa-road"></i> 4.2 км</span><span><i class="fas fa-flag-checkered"></i> 12 поворотов</span></div>
+        <button class="t-btn" data-track="«Неон»" data-len="4.2 км" data-turns="12 поворотов">Детали <i class="fas fa-arrow-right"></i></button>
+      </div>
+      <div class="t-card">
+        <div class="t-top"><span class="t-name">«Орлиный»</span><span class="t-rate"><i class="fas fa-star"></i> 4.9</span></div>
+        <div class="t-bar"><div class="t-fill" style="width:95%"></div></div>
+        <div class="t-meta"><span><i class="fas fa-road"></i> 6.8 км</span><span><i class="fas fa-flag-checkered"></i> 21 поворот</span></div>
+        <button class="t-btn" data-track="«Орлиный»" data-len="6.8 км" data-turns="21 поворот">Детали <i class="fas fa-arrow-right"></i></button>
+      </div>
+      <div class="t-card">
+        <div class="t-top"><span class="t-name">«Бриз»</span><span class="t-rate"><i class="fas fa-star"></i> 4.6</span></div>
+        <div class="t-bar"><div class="t-fill" style="width:70%"></div></div>
+        <div class="t-meta"><span><i class="fas fa-road"></i> 3.9 км</span><span><i class="fas fa-flag-checkered"></i> 9 поворотов</span></div>
+        <button class="t-btn" data-track="«Бриз»" data-len="3.9 км" data-turns="9 поворотов">Детали <i class="fas fa-arrow-right"></i></button>
+      </div>
+      <div class="t-card">
+        <div class="t-top"><span class="t-name">«Северный»</span><span class="t-rate"><i class="fas fa-star"></i> 4.7</span></div>
+        <div class="t-bar"><div class="t-fill" style="width:85%"></div></div>
+        <div class="t-meta"><span><i class="fas fa-road"></i> 5.1 км</span><span><i class="fas fa-flag-checkered"></i> 15 поворотов</span></div>
+        <button class="t-btn" data-track="«Северный»" data-len="5.1 км" data-turns="15 поворотов">Детали <i class="fas fa-arrow-right"></i></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="table">
+  <div class="container">
+    <div class="head">
+      <div>
+        <h2>Зачёт <em>сезона</em></h2>
+        <p>Топ по очкам. Жми на строку, чтобы посмотреть цифры.</p>
+      </div>
+    </div>
+    <div class="tbl" id="tbl">
+      <div class="tbl-row tbl-head"><span>#</span><span>Пилот</span><span>Очки</span><span class="tbl-w">Победы</span><span class="tbl-r">Старты</span></div>
+      <div class="tbl-row"><span class="tbl-rank">1</span><span class="tbl-name"><span class="tbl-av">АС</span> Алексей Смирнов</span><span class="tbl-pts">248</span><span class="tbl-w">7</span><span class="tbl-r">12</span></div>
+      <div class="tbl-row"><span class="tbl-rank">2</span><span class="tbl-name"><span class="tbl-av">МК</span> Мария Ковалёва</span><span class="tbl-pts">231</span><span class="tbl-w">6</span><span class="tbl-r">12</span></div>
+      <div class="tbl-row"><span class="tbl-rank">3</span><span class="tbl-name"><span class="tbl-av">ДВ</span> Дмитрий Волков</span><span class="tbl-pts">210</span><span class="tbl-w">5</span><span class="tbl-r">11</span></div>
+      <div class="tbl-row"><span class="tbl-rank">4</span><span class="tbl-name"><span class="tbl-av">ЕЛ</span> Елена Лебедева</span><span class="tbl-pts">188</span><span class="tbl-w">3</span><span class="tbl-r">11</span></div>
+      <div class="tbl-row"><span class="tbl-rank">5</span><span class="tbl-name"><span class="tbl-av">ИП</span> Игорь Петров</span><span class="tbl-pts">175</span><span class="tbl-w">2</span><span class="tbl-r">10</span></div>
+    </div>
+    <div style="text-align:center;margin-top:20px">
+      <button class="btn-line" id="morePilots"><i class="fas fa-list"></i> Показать ещё</button>
+    </div>
+  </div>
+</section>
+
+<section class="calc" id="calc">
+  <div class="container">
+    <div class="head">
+      <div>
+        <h2>Прикинуть <em>круг</em></h2>
+        <p>Грубая оценка по длине трассы и мощности. Для понимания, а не для рекордов.</p>
+      </div>
+    </div>
+    <div class="calc-box">
+      <div class="calc-f">
+        <div class="field">
+          <label for="trackSel">Трасса</label>
+          <select id="trackSel">
+            <option value="4.2" data-base="78">«Неон» — 4.2 км</option>
+            <option value="6.8" data-base="112">«Орлиный» — 6.8 км</option>
+            <option value="3.9" data-base="72">«Бриз» — 3.9 км</option>
+            <option value="5.1" data-base="92">«Северный» — 5.1 км</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="powerIn">Мощность, л.с.</label>
+          <input type="number" id="powerIn" value="500" min="100" max="1200" step="10">
+        </div>
+        <button class="btn" id="calcBtn" style="width:100%"><i class="fas fa-calculator"></i> Посчитать</button>
+      </div>
+      <div class="calc-res">
+        <div class="calc-lbl">Примерное время круга</div>
+        <div class="calc-val" id="calcVal">--</div>
+        <div class="calc-note" id="calcNote">Задай параметры и нажми «Посчитать»</div>
+        <div class="calc-speed">Средняя скорость: <b id="calcSpeed">--</b> км/ч</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="container">
+    <div class="head">
+      <div>
+        <h2>Часто <em>спрашивают</em></h2>
+        <p>Если ответа нет — напиши, разберёмся.</p>
+      </div>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q">Как попасть на заезд? <i class="fas fa-chevron-down"></i></button>
+        <div class="faq-a">Жми «В клуб» в шапке, оставь имя и почту. Мы пришлём письмо с датой ближайшего заезда и списком, что взять с собой. Обычно всё занимает пару минут.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Права нужны? <i class="fas fa-chevron-down"></i></button>
+        <div class="faq-a">Для любительских заездов хватит обычных прав категории B. Для серьёзных серий нужна спортивная лицензия — подскажем, где и как её получить.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Можно взять машину в аренду? <i class="fas fa-chevron-down"></i></button>
+        <div class="faq-a">Да. На трассах-партнёрах есть машины от простых трековых до полноценных спортпрототипов. Цена зависит от класса и времени.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Как считаются очки? <i class="fas fa-chevron-down"></i></button>
+        <div class="faq-a">За финишную позицию, плюс бонус за быстрый круг, минус штрафы за нарушения. Полная формула — в разделе «Пилоты», если нажать на конкретного человека.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Я вообще новичок, что делать? <i class="fas fa-chevron-down"></i></button>
+        <div class="faq-a">Начни с тренировок и короткого инструктажа. У нас есть наставники — помогут с траекторией, настройками и тем, как вообще вести себя на трассе.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="revs">
+  <div class="container">
+    <div class="head">
+      <div>
+        <h2>Что <em>говорят</em></h2>
+        <p>Коротко от тех, кто уже катается.</p>
+      </div>
+    </div>
+    <div class="rev-grid">
+      <div class="rev">
+        <p class="rev-text">«Через Race Hub нашёл команду — теперь выезжаю на этапы, а не просто смотрю стримы по выходным.»</p>
+        <div class="rev-auth"><div class="rev-av">АС</div><div><div class="rev-name">Алексей Смирнов</div><div class="rev-role">пилот, 2 года в гонках</div></div></div>
+      </div>
+      <div class="rev">
+        <p class="rev-text">«Рейтинг реально подстёгивает. Смотришь на таблицу — и понимаешь, что пора поработать над кругом.»</p>
+        <div class="rev-auth"><div class="rev-av">МК</div><div><div class="rev-name">Мария Ковалёва</div><div class="rev-role">пилот, лидер сезона</div></div></div>
+      </div>
+      <div class="rev">
+        <p class="rev-text">«Нашёл механика прямо тут. Теперь готовим машину вместе, а не через знакомых знакомых.»</p>
+        <div class="rev-auth"><div class="rev-av">ДВ</div><div><div class="rev-name">Дмитрий Волков</div><div class="rev-role">пилот, дрифт</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="sub">
+  <div class="container">
+    <div class="sub-box">
+      <div>
+        <h2>Раз в неделю — по делу</h2>
+        <p>Анонсы заездов, результаты и пара советов от тех, кто катает. Без спама и «уникальных предложений».</p>
+      </div>
+      <form class="sub-f" id="subForm">
+        <input type="email" id="subEmail" placeholder="Твоя почта" required>
+        <button type="submit" class="btn"><i class="fas fa-paper-plane"></i> Подписаться</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="container">
+    <div class="cta-box">
+      <h2>Ну что, поехали?</h2>
+      <p>Заполни заявку — и мы напишем, когда следующий заезд и что для него нужно.</p>
+      <div class="cta-actions">
+        <button class="btn" data-start><i class="fas fa-steering-wheel"></i> Оставить заявку</button>
+        <button class="btn-2" id="goCalc"><i class="fas fa-calculator"></i> К калькулятору</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container ft">
+    <div class="ft-logo"><div class="logo-ico"><i class="fas fa-flag-checkered"></i></div>RaceHub</div>
+    <div class="ft-links">
+      <a href="#cars">Болиды</a>
+      <a href="#events">Заезды</a>
+      <a href="#tracks">Трассы</a>
+      <a href="#faq">Вопросы</a>
+      <a href="#sub">Подписка</a>
+    </div>
+    <div>© 2025 Race Hub. Пишите, если что.</div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"><i class="fas fa-circle-check"></i><span id="toastText">Готово</span></div>
+
+<div class="modal-wrap" id="modal">
+  <div class="modal">
+    <button class="modal-x" id="modalX"><i class="fas fa-xmark"></i></button>
+    <h3 id="modalTitle">Заявка в клуб</h3>
+    <p class="modal-sub" id="modalSub">Оставь имя и почту — напишем, когда следующий заезд.</p>
+    <form id="joinForm">
+      <div class="field"><label for="nameIn">Имя</label><input type="text" id="nameIn" placeholder="Как тебя звать" required></div>
+      <div class="field"><label for="emailIn">Почта</label><input type="email" id="emailIn" placeholder="you@example.com" required></div>
+      <button type="submit" class="btn"><i class="fas fa-paper-plane"></i> Отправить</button>
+    </form>
+    <div class="modal-alt">Уже с нами? <button type="button" id="toLogin">Войти</button></div>
+  </div>
+</div>
+
+<div class="lb" id="lb">
+  <button class="lb-x" id="lbX"><i class="fas fa-xmark"></i></button>
+  <button class="lb-nav lb-prev" id="lbPrev"><i class="fas fa-chevron-left"></i></button>
+  <button class="lb-nav lb-next" id="lbNext"><i class="fas fa-chevron-right"></i></button>
+  <div class="lb-inner">
+    <div class="lb-img"><img id="lbImg" src="" alt=""></div>
+    <div class="lb-cap">
+      <div><b id="lbName"></b><span id="lbSpec"></span></div>
+      <div class="lb-count" id="lbCount">1 / 6</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const toast=document.getElementById('toast'),toastText=document.getElementById('toastText');
+let toastT=null;
+function say(msg,icon='fa-circle-check'){
+  toastText.textContent=msg;
+  toast.querySelector('i').className='fas '+icon;
+  toast.classList.add('on');
+  clearTimeout(toastT);
+  toastT=setTimeout(()=>toast.classList.remove('on'),3200);
+}
+
+const burger=document.getElementById('burger'),nav=document.getElementById('nav');
+burger.addEventListener('click',()=>nav.classList.toggle('open'));
+nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>nav.classList.remove('open')));
+
+function go(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'})}
+document.querySelectorAll('nav a, .ft-links a').forEach(a=>a.addEventListener('click',()=>{
+  document.querySelectorAll('nav a').forEach(x=>x.classList.remove('active'));
+  if(a.closest('nav'))a.classList.add('active');
+}));
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>{
+  go(b.dataset.go);say('Переходим','fa-arrow-down');
+}));
+
+let cars=[...document.querySelectorAll('#carsGrid .car')],idx=0;
+const lb=document.getElementById('lb'),lbImg=document.getElementById('lbImg'),
+      lbName=document.getElementById('lbName'),lbSpec=document.getElementById('lbSpec'),
+      lbCount=document.getElementById('lbCount');
+
+function openLB(i){
+  cars=[...document.querySelectorAll('#carsGrid .car')];
+  idx=i;drawLB();
+  lb.classList.add('open');document.body.style.overflow='hidden';
+}
+function drawLB(){
+  const c=cars[idx],im=c.querySelector('img');
+  lbImg.src=im.src;lbImg.alt=im.alt;
+  lbName.textContent=c.querySelector('.car-name').textContent;
+  lbSpec.textContent=c.querySelector('.car-spec').textContent;
+  lbCount.textContent=(idx+1)+' / '+cars.length;
+}
+function closeLB(){lb.classList.remove('open');document.body.style.overflow=''}
+function nextLB(){idx=(idx+1)%cars.length;drawLB()}
+function prevLB(){idx=(idx-1+cars.length)%cars.length;drawLB()}
+function bindCars(){document.querySelectorAll('#carsGrid .car').forEach((c,i)=>c.addEventListener('click',()=>openLB(i)))}
+bindCars();
+document.getElementById('lbX').addEventListener('click',closeLB);
+document.getElementById('lbNext').addEventListener('click',nextLB);
+document.getElementById('lbPrev').addEventListener('click',prevLB);
+lb.addEventListener('click',e=>{if(e.target===lb)closeLB()});
+document.addEventListener('keydown',e=>{
+  if(!lb.classList.contains('open'))return;
+  if(e.key==='Escape')closeLB();
+  if(e.key==='ArrowRight')nextLB();
+  if(e.key==='ArrowLeft')prevLB();
+});
+
+const moreCars=[
+  {img:'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?w=800&q=80',name:'Олдскул',spec:'Классика · 300 л.с.'},
+  {img:'https://images.unsplash.com/photo-1511919884226-fd3cad34687c?w=800&q=80',name:'Трек-кар',spec:'Track Day · 520 л.с.'},
+  {img:'https://images.unsplash.com/photo-1553440569-bcc63803a83d?w=800&q=80',name:'Тюнинг',spec:'Тюнинг · 700 л.с.'}
+];
+let moreDone=false;
+document.getElementById('moreCars').addEventListener('click',()=>{
+  if(moreDone){say('Больше пока нет','fa-circle-info');return}
+  const g=document.getElementById('carsGrid');
+  moreCars.forEach(c=>{
+    const d=document.createElement('div');
+    d.className='car';
+    d.innerHTML=`<img src="${c.img}" alt="${c.name}" loading="lazy">
+      <span class="car-zoom"><i class="fas fa-expand"></i></span>
+      <div class="car-info"><span class="car-spec">${c.spec}</span><span class="car-name">${c.name}</span></div>`;
+    g.appendChild(d);
+  });
+  bindCars();moreDone=true;
+  const b=document.getElementById('moreCars');
+  b.innerHTML='<i class="fas fa-check"></i> Всё показано';
+  b.style.opacity='.6';b.style.cursor='default';
+  say('Добавили ещё три','fa-car');
+});
+
+const modal=document.getElementById('modal'),joinForm=document.getElementById('joinForm'),
+      modalTitle=document.getElementById('modalTitle'),modalSub=document.getElementById('modalSub');
+let mode='join';
+function openModal(m='join'){
+  mode=m;
+  if(m==='join'){
+    modalTitle.textContent='Заявка в клуб';
+    modalSub.textContent='Оставь имя и почту — напишем, когда следующий заезд.';
+  }else{
+    modalTitle.textContent='Вход';
+    modalSub.textContent='Почта и пароль — и ты снова в деле.';
+  }
+  modal.classList.add('open');document.body.style.overflow='hidden';
+  setTimeout(()=>document.getElementById('nameIn').focus(),250);
+}
+function closeModal(){modal.classList.remove('open');document.body.style.overflow=''}
+
+document.getElementById('joinTop').addEventListener('click',()=>openModal('join'));
+document.getElementById('loginBtn').addEventListener('click',()=>openModal('login'));
+document.getElementById('toLogin').addEventListener('click',()=>openModal('login'));
+document.querySelectorAll('[data-start]').forEach(b=>b.addEventListener('click',()=>openModal('join')));
+document.getElementById('modalX').addEventListener('click',closeModal);
+modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('open'))closeModal()});
+
+joinForm.addEventListener('submit',e=>{
+  e.preventDefault();
+  const n=document.getElementById('nameIn').value.trim();
+  const em=document.getElementById('emailIn').value.trim();
+  if(!n||!em){say('Заполни оба поля','fa-triangle-exclamation');return}
+  closeModal();
+  if(mode==='join'){
+    say('Принято, '+n+'. Скоро напишем.','fa-flag-checkered');
+    const s=document.getElementById('nPilots');
+    s.textContent=parseInt(s.textContent)+1;
+  }else{
+    say('С возвращением, '+n,'fa-right-to-bracket');
+  }
+  joinForm.reset();
+});
+
+document.querySelectorAll('[data-watch]').forEach(b=>b.addEventListener('click',()=>{
+  go('events');say('Смотрим заезды','fa-calendar');
+}));
+
+const fBtns=document.querySelectorAll('#filters button'),eCards=document.querySelectorAll('.e-card');
+fBtns.forEach(b=>b.addEventListener('click',()=>{
+  fBtns.forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+  const f=b.dataset.f;
+  eCards.forEach(c=>{
+    const ok=f==='all'||c.dataset.cat===f;
+    c.classList.toggle('hide',!ok);
+  });
+  const vis=[...eCards].filter(c=>!c.classList.contains('hide')).length;
+  say('Показано: '+vis,'fa-filter');
+}));
+
+document.querySelectorAll('[data-like]').forEach(b=>b.addEventListener('click',()=>{
+  const cnt=b.querySelector('span'),ic=b.querySelector('i');
+  let v=parseInt(cnt.textContent);
+  if(b.classList.contains('on')){
+    b.classList.remove('on');v=Math.max(0,v-1);ic.className='far fa-heart';
+  }else{
+    b.classList.add('on');v++;ic.className='fas fa-heart';say('В избранном','fa-heart');
+  }
+  cnt.textContent=v;
+}));
+
+document.querySelectorAll('.e-more').forEach(b=>b.addEventListener('click',()=>{
+  say(b.dataset.name+' — '+b.dataset.date+', '+b.dataset.place,'fa-flag');
+}));
+
+document.querySelectorAll('.t-btn').forEach(b=>b.addEventListener('click',()=>{
+  say(b.dataset.track+': '+b.dataset.len+', '+b.dataset.turns,'fa-map-location-dot');
+}));
+
+const extraP=[
+  {r:6,i:'НГ',n:'Николай Гусев',p:160,w:2,ra:10},
+  {r:7,i:'ОБ',n:'Ольга Белова',p:148,w:1,ra:9},
+  {r:8,i:'СА',n:'Сергей Антонов',p:132,w:1,ra:9}
+];
+const tbl=document.getElementById('tbl'),moreP=document.getElementById('morePilots');
+let extraOn=false;
+moreP.addEventListener('click',()=>{
+  if(extraOn){
+    document.querySelectorAll('.tbl-row.extra').forEach(x=>x.remove());
+    moreP.innerHTML='<i class="fas fa-list"></i> Показать ещё';
+    extraOn=false;say('Свернули','fa-chevron-up');return;
+  }
+  extraP.forEach(p=>{
+    const d=document.createElement('div');
+    d.className='tbl-row extra';
+    d.innerHTML=`<span class="tbl-rank">${p.r}</span>
+      <span class="tbl-name"><span class="tbl-av">${p.i}</span> ${p.n}</span>
+      <span class="tbl-pts">${p.p}</span>
+      <span class="tbl-w">${p.w}</span>
+      <span class="tbl-r">${p.ra}</span>`;
+    tbl.appendChild(d);
+  });
+  moreP.innerHTML='<i class="fas fa-chevron-up"></i> Свернуть';
+  extraOn=true;say('Показали всех','fa-users');
+});
+document.querySelectorAll('.tbl-row:not(.tbl-head)').forEach(r=>{
+  r.style.cursor='pointer';
+  r.addEventListener('click',()=>{
+    const n=r.querySelector('.tbl-name').textContent.trim();
+    const p=r.querySelector('.tbl-pts').textContent;
+    say(n+' — '+p+' очков','fa-user');
+  });
+});
+
+const trackSel=document.getElementById('trackSel'),powerIn=document.getElementById('powerIn'),
+      calcBtn=document.getElementById('calcBtn'),calcVal=document.getElementById('calcVal'),
+      calcSpeed=document.getElementById('calcSpeed'),calcNote=document.getElementById('calcNote');
+
+function fmt(sec){
+  const m=Math.floor(sec/60),s=(sec%60).toFixed(1);
+  return m>0?m+':'+s.padStart(4,'0'):s+' с';
+}
+calcBtn.addEventListener('click',()=>{
+  const o=trackSel.options[trackSel.selectedIndex];
+  const base=parseFloat(o.dataset.base);
+  const len=parseFloat(o.value);
+  const pw=parseFloat(powerIn.value)||500;
+  const f=Math.sqrt(500/pw);
+  const t=base*f;
+  const sp=(len/(t/3600)).toFixed(0);
+  calcVal.textContent=fmt(t);
+  calcSpeed.textContent=sp;
+  calcNote.textContent='Для '+pw+' л.с. на '+len+' км';
+  calcVal.style.transform='scale(1.08)';
+  setTimeout(()=>calcVal.style.transform='scale(1)',200);
+  say('Посчитали','fa-calculator');
+});
+document.getElementById('goCalc').addEventListener('click',()=>{go('calc');say('Калькулятор','fa-calculator')});
+
+document.querySelectorAll('.faq-q').forEach(q=>q.addEventListener('click',()=>{
+  const it=q.closest('.faq-item'),was=it.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(x=>x.classList.remove('open'));
+  if(!was)it.classList.add('open');
+}));
+
+document.getElementById('subForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const em=document.getElementById('subEmail').value.trim();
+  if(!em||!em.includes('@')){say('Почта какая-то не та','fa-triangle-exclamation');return}
+  say('Подписали '+em,'fa-envelope-circle-check');
+  e.target.reset();
+});
+
+window.addEventListener('load',()=>{
+  ['nPilots','nTracks','nEvents','nRaces'].forEach((id,k)=>{
+    const el=document.getElementById(id),goal=parseInt(el.textContent);
+    let cur=0,step=Math.max(1,Math.ceil(goal/40));
+    const t=setInterval(()=>{
+      cur+=step;
+      if(cur>=goal){cur=goal;clearInterval(t)}
+      el.textContent=cur;
+    },20+k*5);
+  });
+});
+</script>
+</body>
+</html>
